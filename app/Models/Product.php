@@ -9,18 +9,17 @@ class Product extends Model
 {
     use HasFactory;
 
-    // Add this line below:
     protected $fillable = [
         'name',
         'price',
         'category',
         'image',
         'description',
-        'phone_number', // Add any other columns you have in your table
     ];
-    
-    // If you're using an array for images, you might also need this:
-    protected $casts = [
-        'image' => 'array',
-    ];
+
+    /* Note: We removed 'phone_number' here because products usually 
+       don't have phone numbers (orders do!). 
+       We also removed the 'array' cast because you are uploading 
+       one image at a time.
+    */
 }
