@@ -55,7 +55,8 @@
             "@php artisan filament:upgrade",
             "@php artisan route:clear",
             "@php artisan config:clear",
-            "@php artisan cache:clear"
+            "@php artisan cache:clear",
+            "@php artisan filament:assets"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
