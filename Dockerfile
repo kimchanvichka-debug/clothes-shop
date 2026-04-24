@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     nginx
 
-# Install PHP extensions (Added 'zip' here)
+# Install and ENABLE PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Get latest Composer
@@ -24,8 +24,8 @@ WORKDIR /var/www
 # Copy existing application directory
 COPY . /var/www
 
-# Install dependencies (Added ignore-platform-reqs to be safe)
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+# Install dependencies (Using the bypass flags)
+RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # Give permissions for Laravel
 RUN chown -R www-data:www-data /var/www/storage /var/www/cache
