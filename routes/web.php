@@ -7,10 +7,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use App\Livewire\Checkout;
 
-// 1. THE FINAL ADMIN CREATOR (Bypasses column errors)
+// 1. THE FINAL ADMIN CREATOR
+// Visit: your-url.onrender.com/create-admin-xyz to CREATE the account
 Route::get('/create-admin-xyz', function () {
     try {
-        // Find or create the user
+        // This looks for the admin. If it's not there, it makes one.
         $user = User::where('email', 'admin@example.com')->first();
         
         if (!$user) {
@@ -19,18 +20,19 @@ Route::get('/create-admin-xyz', function () {
             $user->email = 'admin@example.com';
         }
         
+        // This SETS the password to password123
         $user->password = Hash::make('password123');
         
-        // Only set is_admin if the column actually exists in your database
+        // This makes the account an Admin if your database allows it
         if (Schema::hasColumn('users', 'is_admin')) {
             $user->is_admin = true;
         }
         
         $user->save();
 
-        return "<h1>Success!</h1> Admin account is ready.<br>Email: <b>admin@example.com</b><br>Password: <b>password123</b><br><br>Now try to login.";
+        return "<h1>Success!</h1> The admin account has been CREATED.<br>Email: <b>admin@example.com</b><br>Password: <b>password123</b><br><br>You can now use these to log in.";
     } catch (\Exception $e) {
-        return "Error creating admin: " . $e->getMessage();
+        return "Error: " . $e->getMessage();
     }
 });
 
