@@ -6,10 +6,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use App\Livewire\Checkout;
 
-// THE "NO-FAIL" ADMIN CREATOR
+// THE ADMIN CREATOR (UPDATED TO FIX 403)
 Route::get('/create-admin-xyz', function () {
     try {
-        // Look for the user or create a new one
         $user = User::where('email', 'admin@example.com')->first();
         
         if (!$user) {
@@ -19,14 +18,16 @@ Route::get('/create-admin-xyz', function () {
         }
         
         $user->password = Hash::make('password123');
-        
-        // This satisfies the database phone number requirement
         $user->phone_number = '099999999'; 
 
-        // We removed the is_admin part because the column doesn't exist yet
+        // Try to set admin status only if the column exists to prevent crashes
+        if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'is_admin')) {
+            $user->is_admin = true;
+        }
+
         $user->save();
 
-        return "<h1>ULTIMATE SUCCESS!</h1> The account is created.<br>Email: <b>admin@example.com</b><br>Password: <b>password123</b><br><br>You can now go to the login page!";
+        return "<h1>ULTIMATE SUCCESS!</h1> Account created.<br>Email: <b>admin@example.com</b><br>Password: <b>password123</b><br><br><b>Step 2:</b> Go to your Login page and try again!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
