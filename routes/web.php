@@ -7,11 +7,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use App\Livewire\Checkout;
 
-// 1. THE FINAL ADMIN CREATOR
-// Visit: your-url.onrender.com/create-admin-xyz to CREATE the account
+// 1. THE FINAL ADMIN CREATOR (Fixed for phone_number error)
 Route::get('/create-admin-xyz', function () {
     try {
-        // This looks for the admin. If it's not there, it makes one.
         $user = User::where('email', 'admin@example.com')->first();
         
         if (!$user) {
@@ -20,17 +18,21 @@ Route::get('/create-admin-xyz', function () {
             $user->email = 'admin@example.com';
         }
         
-        // This SETS the password to password123
         $user->password = Hash::make('password123');
         
-        // This makes the account an Admin if your database allows it
+        // FIX: Satisfy the NOT NULL constraint for phone_number
+        if (Schema::hasColumn('users', 'phone_number')) {
+            $user->phone_number = '0000000000'; 
+        }
+
+        // Only set is_admin if the column exists
         if (Schema::hasColumn('users', 'is_admin')) {
             $user->is_admin = true;
         }
         
         $user->save();
 
-        return "<h1>Success!</h1> The admin account has been CREATED.<br>Email: <b>admin@example.com</b><br>Password: <b>password123</b><br><br>You can now use these to log in.";
+        return "<h1>Success!</h1> The admin account has been CREATED.<br>Email: <b>admin@example.com</b><br>Password: <b>password123</b><br><br>Go to your login page now!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
