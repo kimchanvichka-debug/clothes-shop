@@ -43,10 +43,11 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 80
 
-# Start command (Added filament:assets to be 100% sure icons show up)
+# Start command
 CMD php artisan config:clear && \
     php artisan route:clear && \
     php artisan view:clear && \
     php artisan filament:assets && \
+    php artisan storage:link && \
     php artisan migrate --force && \
     php artisan serve --host=0.0.0.0 --port=80

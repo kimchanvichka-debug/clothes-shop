@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use App\Livewire\Checkout;
 
-// 1. THE ADMIN & FIX COMBO ROUTE
+// 1. THE ADMIN, VISUALS, AND IMAGE UPLOAD FIX
 Route::get('/create-admin-xyz', function () {
     try {
         // Create or Update the Admin Account
@@ -24,14 +24,19 @@ Route::get('/create-admin-xyz', function () {
         }
         $user->save();
 
-        // AUTOMATICALLY FIX ASSETS TOO
+        // FIX VISUALS & ICONS
         \Illuminate\Support\Facades\Artisan::call('filament:assets');
         \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        
+        // FIX IMAGE UPLOADS (Connects the storage folder)
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
 
         return "<h1>SUCCESS!</h1> 
                 <p>1. Account created: <b>admin@example.com</b> / <b>password123</b></p>
-                <p>2. Styles have been forced to update.</p>
-                <a href='/leeminka/login' style='padding:10px; background:purple; color:white; text-decoration:none;'>GO TO LOGIN</a>";
+                <p>2. Design Styles & Icons fixed.</p>
+                <p>3. Image Uploads enabled.</p>
+                <a href='/leeminka/login' style='padding:10px; background:purple; color:white; text-decoration:none; border-radius:5px;'>GO TO LOGIN</a>";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
