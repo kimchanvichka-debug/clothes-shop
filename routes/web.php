@@ -6,28 +6,32 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
 use App\Livewire\Checkout;
 
-// THE ADMIN CREATOR (UPDATED TO FIX 403)
+// 1. THE ADMIN & FIX COMBO ROUTE
 Route::get('/create-admin-xyz', function () {
     try {
+        // Create or Update the Admin Account
         $user = User::where('email', 'admin@example.com')->first();
-        
         if (!$user) {
             $user = new User();
             $user->name = 'Admin User';
             $user->email = 'admin@example.com';
         }
-        
         $user->password = Hash::make('password123');
         $user->phone_number = '099999999'; 
 
-        // Try to set admin status only if the column exists to prevent crashes
         if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'is_admin')) {
             $user->is_admin = true;
         }
-
         $user->save();
 
-        return "<h1>ULTIMATE SUCCESS!</h1> Account created.<br>Email: <b>admin@example.com</b><br>Password: <b>password123</b><br><br><b>Step 2:</b> Go to your Login page and try again!";
+        // AUTOMATICALLY FIX ASSETS TOO
+        \Illuminate\Support\Facades\Artisan::call('filament:assets');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+
+        return "<h1>SUCCESS!</h1> 
+                <p>1. Account created: <b>admin@example.com</b> / <b>password123</b></p>
+                <p>2. Styles have been forced to update.</p>
+                <a href='/leeminka/login' style='padding:10px; background:purple; color:white; text-decoration:none;'>GO TO LOGIN</a>";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
