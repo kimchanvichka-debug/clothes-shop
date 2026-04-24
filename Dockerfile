@@ -24,11 +24,12 @@ WORKDIR /var/www
 # Copy existing application directory
 COPY . /var/www
 
-# Install dependencies (Using the bypass flags)
+# Install dependencies
 RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# Give permissions for Laravel
-RUN chown -R www-data:www-data /var/www/storage /var/www/cache
+# Create necessary folders and Give permissions
+RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 80
 
