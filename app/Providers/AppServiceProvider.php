@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // This forces all CSS and JS to load over HTTPS.
+        // This is the fix for the "Giant Icons" and broken Admin design on Render.
+        if (config('app.env') === 'production' || env('FORCE_HTTPS', true)) {
+            URL::forceScheme('https');
+        }
     }
 }
