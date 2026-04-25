@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -18,13 +19,19 @@ class OrderItemsRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Select::make('product_id')
                     ->relationship('product', 'name')
-                    ->required(),
+                    ->required()
+                    ->reactive() // Allows the price to update automatically
+                    ->afterStateUpdated(fn ($state, set) => set('price', Product::find($state)?->price ?? 0)),
+
                 Forms\Components\TextInput::make('quantity')
                     ->numeric()
+                    ->default(1)
                     ->required(),
+
                 Forms\Components\TextInput::make('price')
                     ->numeric()
                     ->prefix('$')
+                    ->label('Unit Price')
                     ->required(),
             ]);
     }
@@ -34,9 +41,8 @@ class OrderItemsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('product_id')
             ->columns([
-                // This shows the actual name of the product (Crop Top, etc.)
                 Tables\Columns\TextColumn::make('product.name')
-                    ->label('Product Name')
+                    ->label('Product')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('quantity')
@@ -45,22 +51,24 @@ class OrderItemsRelationManager extends RelationManager
                     ->color('info'),
 
                 Tables\Columns\TextColumn::make('price')
-                    ->label('Price at Sale')
+                    ->label('Price')
                     ->money('USD'),
 
-                // This calculates Total = Price x Quantity
+                // Calculates Total = Price x Quantity
                 Tables\Columns\TextColumn::make('subtotal')
                     ->label('Subtotal')
                     ->state(fn ($record): float => $record->quantity * $record->price)
-                    ->money('USD'),
+                    ->money('USD')
+                    ->color('success')
+                    ->weight('bold'),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                // Usually you don't manually create items here, 
-                // but keeping it in case you need to fix an order
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label('Add Item')
+                    ->icon('heroicon-m-plus'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
