@@ -53,8 +53,8 @@ class ProductResource extends Resource
 
                         FileUpload::make('image')
                             ->image()
+                            ->disk('cloudinary') // Forced Cloudinary
                             ->directory('products')
-                            ->disk('public')
                             ->visibility('public')
                             ->required(),
 
@@ -71,8 +71,7 @@ class ProductResource extends Resource
             ->columns([
                 ImageColumn::make('image')
                     ->label('Photo')
-                    ->disk('public') 
-                    ->visibility('public')
+                    ->disk('cloudinary') // Updated to match the form
                     ->square() 
                     ->size(80) 
                     ->grow(false),
