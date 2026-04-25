@@ -27,9 +27,6 @@ class LeeminkaPanelProvider extends PanelProvider
             ->id('leeminka')
             ->path('leeminka')
             ->login()
-            // --- THE MASTER FIX FOR RENDER UPLOADS ---
-            ->defaultFileSystemDisk('cloudinary') 
-            // -----------------------------------------
             ->colors([
                 'primary' => '#c2410c', 
             ])
