@@ -10,9 +10,6 @@ class Order extends Model
 {
     use HasFactory;
 
-    /**
-     * Fields that can be filled via Order::create()
-     */
     protected $fillable = [
         'customer_name',
         'phone_number',
@@ -22,40 +19,31 @@ class Order extends Model
         'status',
     ];
 
-    /**
-     * Always load orderItems to prevent "N+1" performance issues
-     * and ensure they show up in your Admin Panel instantly.
-     */
+    // Ensure we load the items automatically
     protected $with = ['orderItems'];
 
-    /**
-     * Automatic type conversion
-     */
     protected $casts = [
         'total_amount' => 'decimal:2',
     ];
-
-    /**
-     * Set default status automatically if not provided
-     */
-    protected static function booted()
-    {
-        static::creating(function ($order) {
-            $order->status = $order->status ?? self::STATUS_PENDING;
-        });
-    }
-
-    /**
-     * Relationship: Connects this order to the specific items purchased.
-     */
-    public function orderItems(): HasMany
-    {
-        return $this->hasMany(OrderItem::class);
-    }
 
     // Status Constants
     const STATUS_PENDING = 'pending';
     const STATUS_PAID = 'paid';
     const STATUS_SHIPPED = 'shipped';
     const STATUS_CANCELLED = 'cancelled';
+
+    protected static function booted()
+    {
+        static::creating(function ($order) {
+            // Safety check: force pending status if it's empty
+            if (empty($order->status)) {
+                $order->status = self::STATUS_PENDING;
+            }
+        });
+    }
+
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }
