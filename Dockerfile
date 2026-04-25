@@ -31,12 +31,12 @@ ENV COMPOSER_PROCESS_TIMEOUT=600
 RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --optimize-autoloader --ignore-platform-reqs
 RUN npm install && npm run build
 
-# 2. Permissions (CRITICAL)
-RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
+# 2. Permissions (CRITICAL for fixing that 500 error)
+RUN mkdir -p /var/www/storage/logs /var/www/storage/framework/views /var/www/storage/framework/sessions /var/www/storage/framework/cache /var/www/bootstrap/cache
 RUN chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# 3. Optimize for Production
+# 3. Optimize for Production & Responsive UI
 RUN php artisan optimize
 RUN php artisan filament:assets
 
