@@ -25,7 +25,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory
+# Copy everything
 COPY . /var/www
 
 # Fix for timeouts
@@ -37,19 +37,17 @@ RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --optim
 # 2. Build the CSS/JS
 RUN npm install && npm run build
 
-# 3. GENERATE THE MAPS (Optimization) 
-# We do this here so the container "knows" where Products/Orders are
+# 3. Bake the maps and assets into the image
 RUN php artisan optimize
 RUN php artisan filament:assets
 
-# Create necessary folders and Give permissions
-RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
+# 4. EMERGENCY PERMISSION FIX (This stops the 500 error)
+RUN chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 80
 
-# Start command - REMOVED the "clearing" commands
+# Start command
 CMD php artisan storage:link && \
     php artisan migrate --force && \
     php artisan serve --host=0.0.0.0 --port=80
