@@ -17,6 +17,9 @@ class OrderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
 
+    // Grouping navigation makes it look cleaner on mobile
+    protected static ?string $navigationGroup = 'Shop Management';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -26,7 +29,7 @@ class OrderResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('customer_name')
                             ->required()
-                            ->placeholder('e.g. John Doe / Table 5'),
+                            ->maxLength(255),
                         Forms\Components\TextInput::make('phone_number')
                             ->tel()
                             ->required(),
@@ -44,9 +47,9 @@ class OrderResource extends Resource
                             ->required(),
                         Forms\Components\Select::make('status')
                             ->options([
-                                'pending' => 'Pending (Wait for money)',
-                                'paid' => 'Paid (Money Received)',
-                                'shipped' => 'Shipped (On the way)',
+                                'pending' => 'Pending',
+                                'paid' => 'Paid',
+                                'shipped' => 'Shipped',
                                 'cancelled' => 'Cancelled',
                             ])
                             ->default('pending')
@@ -56,7 +59,7 @@ class OrderResource extends Resource
                             ->image()
                             ->directory('orders')
                             ->disk('public')
-                            ->label('ABA Receipt Screenshot')
+                            ->label('Receipt Screenshot')
                             ->columnSpanFull(),
                     ])->columns(2),
             ]);
@@ -70,7 +73,6 @@ class OrderResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
-                Tables\Columns\TextColumn::make('phone_number'),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->money('USD')
                     ->sortable()
@@ -86,13 +88,13 @@ class OrderResource extends Resource
                     }),
                 Tables\Columns\ImageColumn::make('payment_screenshot')
                     ->label('Receipt')
-                    ->disk('public')
                     ->circular(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('created_at', 'desc') // Shows newest orders first
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
@@ -103,9 +105,7 @@ class OrderResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->button()
-                    ->color('info'),
+                Tables\Actions\EditAction::make()->button(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -114,10 +114,10 @@ class OrderResource extends Resource
             ]);
     }
 
-    // THIS SECTION CONNECTS THE ITEMS TABLE TO THE EDIT PAGE
     public static function getRelations(): array
     {
         return [
+            // If the error persists, put // in front of the line below to test
             RelationManagers\OrderItemsRelationManager::class,
         ];
     }
