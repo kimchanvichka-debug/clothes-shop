@@ -22,13 +22,21 @@ class OrderResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Customer Information')
+                    ->icon('heroicon-m-user')
                     ->schema([
-                        Forms\Components\TextInput::make('customer_name')->required(),
-                        Forms\Components\TextInput::make('phone_number')->required(),
-                        Forms\Components\Textarea::make('address')->required()->columnSpanFull(),
+                        Forms\Components\TextInput::make('customer_name')
+                            ->required()
+                            ->placeholder('e.g. John Doe / Table 5'),
+                        Forms\Components\TextInput::make('phone_number')
+                            ->tel()
+                            ->required(),
+                        Forms\Components\Textarea::make('address')
+                            ->required()
+                            ->columnSpanFull(),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Payment & Status')
+                    ->icon('heroicon-m-credit-card')
                     ->schema([
                         Forms\Components\TextInput::make('total_amount')
                             ->prefix('$')
@@ -40,11 +48,15 @@ class OrderResource extends Resource
                                 'paid' => 'Paid (Money Received)',
                                 'shipped' => 'Shipped (On the way)',
                                 'cancelled' => 'Cancelled',
-                            ])->default('pending')->required()->native(false),
+                            ])
+                            ->default('pending')
+                            ->required()
+                            ->native(false),
                         Forms\Components\FileUpload::make('payment_screenshot')
                             ->image()
                             ->directory('orders')
-                            ->label('ABA Receipt Screenshot (Option A)')
+                            ->disk('public')
+                            ->label('ABA Receipt Screenshot')
                             ->columnSpanFull(),
                     ])->columns(2),
             ]);
@@ -54,9 +66,15 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('customer_name')->searchable(),
+                Tables\Columns\TextColumn::make('customer_name')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
                 Tables\Columns\TextColumn::make('phone_number'),
-                Tables\Columns\TextColumn::make('total_amount')->money('USD'),
+                Tables\Columns\TextColumn::make('total_amount')
+                    ->money('USD')
+                    ->sortable()
+                    ->color('success'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -67,16 +85,27 @@ class OrderResource extends Resource
                         default => 'gray',
                     }),
                 Tables\Columns\ImageColumn::make('payment_screenshot')
-                    ->label('Receipt'),
+                    ->label('Receipt')
+                    ->disk('public')
+                    ->circular(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
             ])
+            ->defaultSort('created_at', 'desc') // Shows newest orders first
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'paid' => 'Paid',
+                        'shipped' => 'Shipped',
+                        'cancelled' => 'Cancelled',
+                    ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->button()
+                    ->color('info'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
