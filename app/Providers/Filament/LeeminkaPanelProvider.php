@@ -27,6 +27,10 @@ class LeeminkaPanelProvider extends PanelProvider
             ->id('leeminka')
             ->path('leeminka')
             ->login()
+            // --- STORAGE FIXES START ---
+            ->defaultFileUploadDisk('cloudinary')
+            ->fileUploadsDirectory('products')
+            // --- STORAGE FIXES END ---
             // 1. Set the brand colors to match your website's orange
             ->colors([
                 'primary' => '#c2410c', 
@@ -46,7 +50,6 @@ class LeeminkaPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                // Removed the Filament Info widget to keep it clean
             ])
             ->middleware([
                 EncryptCookies::class,
