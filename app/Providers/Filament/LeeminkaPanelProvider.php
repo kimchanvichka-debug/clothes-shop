@@ -27,10 +27,6 @@ class LeeminkaPanelProvider extends PanelProvider
             ->id('leeminka')
             ->path('leeminka')
             ->login()
-            // --- STORAGE FIXES START ---
-            ->defaultFileUploadDisk('cloudinary')
-            ->fileUploadsDirectory('products')
-            // --- STORAGE FIXES END ---
             // 1. Set the brand colors to match your website's orange
             ->colors([
                 'primary' => '#c2410c', 
