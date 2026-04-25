@@ -31,7 +31,7 @@ ENV COMPOSER_PROCESS_TIMEOUT=600
 RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --optimize-autoloader --ignore-platform-reqs
 RUN npm install && npm run build
 
-# 2. THE FIX: Permissions (This stops the 500 Error)
+# 2. Permissions (CRITICAL)
 RUN mkdir -p /var/www/storage /var/www/bootstrap/cache
 RUN chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
@@ -40,10 +40,10 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 RUN php artisan optimize
 RUN php artisan filament:assets
 
-# We use port 10000 because Render loves it
+# Match Render Port
 EXPOSE 10000
 
-# 4. Start command (Forcing port 10000)
+# 4. Start command
 CMD php artisan storage:link && \
     php artisan migrate --force && \
     php artisan serve --host=0.0.0.0 --port=10000
