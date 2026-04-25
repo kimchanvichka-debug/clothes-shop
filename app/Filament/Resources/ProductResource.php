@@ -55,7 +55,7 @@ class ProductResource extends Resource
                             ->image()
                             ->directory('products')
                             ->disk('public')
-                            ->visibility('public') // Added for live server compatibility
+                            ->visibility('public')
                             ->required(),
 
                         Textarea::make('description')
@@ -72,7 +72,7 @@ class ProductResource extends Resource
                 ImageColumn::make('image')
                     ->label('Photo')
                     ->disk('public') 
-                    ->visibility('public') // Ensures browser can see the file
+                    ->visibility('public')
                     ->square() 
                     ->size(80) 
                     ->grow(false),
@@ -96,10 +96,9 @@ class ProductResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            // RESPONSIVENESS: Keeps your shop looking good on phones!
             ->contentGrid([
-                'md' => null, // Normal table for laptop
-                'sm' => 1,    // 1-column list for mobile
+                'md' => null,
+                'sm' => 1,
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('category')
