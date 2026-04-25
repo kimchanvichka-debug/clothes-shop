@@ -27,17 +27,17 @@ class LeeminkaPanelProvider extends PanelProvider
             ->id('leeminka')
             ->path('leeminka')
             ->login()
-            // 1. Set the brand colors to match your website's orange
+            // --- THE MASTER FIX FOR RENDER UPLOADS ---
+            ->defaultFileSystemDisk('cloudinary') 
+            // -----------------------------------------
             ->colors([
                 'primary' => '#c2410c', 
             ])
-            // 2. Custom Branding for the public
             ->brandName('COZY. STUDIO')
             ->brandLogo(asset('logo.png')) 
             ->brandLogoHeight('3rem')
             ->favicon(asset('logo.png'))
             ->font('Inter')
-            // 3. Remove default Filament links to make it look custom
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
