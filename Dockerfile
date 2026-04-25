@@ -19,11 +19,11 @@ WORKDIR /var/www
 COPY . /var/www
 
 # 5. Install Dependencies
-RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-platform-reqs
+# --- ADDED --no-scripts TO PREVENT BUILD CRASHES ---
+RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 RUN npm install && npm run build
 
 # 6. THE "ULTIMATE" PERMISSIONS FIX
-# We create EVERY folder Filament/Livewire needs for uploads
 RUN mkdir -p storage/app/public \
     storage/app/livewire-tmp \
     storage/framework/sessions \
@@ -31,7 +31,7 @@ RUN mkdir -p storage/app/public \
     storage/framework/cache \
     bootstrap/cache
 
-# Set permissions so the 'www-data' user (which runs PHP) can actually write files
+# Set permissions
 RUN chmod -R 777 storage bootstrap/cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
