@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
-use App\Models\Product;
+use App\Models\Product; // This line is the fix!
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -18,15 +18,17 @@ class OrderItemsRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('product_id')
+                    ->label('Product')
                     ->relationship('product', 'name')
                     ->required()
-                    ->reactive() // Allows the price to update automatically
-                    ->afterStateUpdated(fn ($state, set) => set('price', Product::find($state)?->price ?? 0)),
+                    ->reactive() 
+                    ->afterStateUpdated(fn ($state, callable $set) => $set('price', Product::find($state)?->price ?? 0)),
 
                 Forms\Components\TextInput::make('quantity')
                     ->numeric()
                     ->default(1)
-                    ->required(),
+                    ->required()
+                    ->reactive(),
 
                 Forms\Components\TextInput::make('price')
                     ->numeric()
@@ -54,7 +56,6 @@ class OrderItemsRelationManager extends RelationManager
                     ->label('Price')
                     ->money('USD'),
 
-                // Calculates Total = Price x Quantity
                 Tables\Columns\TextColumn::make('subtotal')
                     ->label('Subtotal')
                     ->state(fn ($record): float => $record->quantity * $record->price)
