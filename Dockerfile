@@ -25,10 +25,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy everything
+# Copy your files
 COPY . /var/www
 
-# Fix for timeouts
 ENV COMPOSER_PROCESS_TIMEOUT=600
 
 # 1. Install PHP dependencies
@@ -37,11 +36,11 @@ RUN composer install --no-interaction --no-plugins --no-scripts --no-dev --optim
 # 2. Build the CSS/JS
 RUN npm install && npm run build
 
-# 3. Bake the maps and assets into the image
+# 3. Bake the maps into the image (Stops the 500 errors)
 RUN php artisan optimize
 RUN php artisan filament:assets
 
-# 4. EMERGENCY PERMISSION FIX (This stops the 500 error)
+# 4. Fix Permissions
 RUN chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
