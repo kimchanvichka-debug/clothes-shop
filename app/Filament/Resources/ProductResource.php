@@ -53,15 +53,19 @@ class ProductResource extends Resource
 
                         FileUpload::make('image')
                             ->image()
-                            ->disk('cloudinary') // Forced Cloudinary
+                            // Explicitly using the Cloudinary disk
+                            ->disk('cloudinary') 
                             ->directory('products')
                             ->visibility('public')
+                            ->preserveFilenames()
                             ->required(),
 
                         Textarea::make('description')
                             ->rows(3)
                             ->columnSpanFull(),
-                    ])->columns(2),
+                    ])
+                    // 2 columns on laptop, 1 on mobile (handled by Section automatically)
+                    ->columns(2),
             ]);
     }
 
@@ -71,7 +75,7 @@ class ProductResource extends Resource
             ->columns([
                 ImageColumn::make('image')
                     ->label('Photo')
-                    ->disk('cloudinary') // Updated to match the form
+                    ->disk('cloudinary')
                     ->square() 
                     ->size(80) 
                     ->grow(false),
@@ -95,9 +99,16 @@ class ProductResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            /**
+             * Responsive Grid for Product List
+             * sm: 1 column (Mobile)
+             * md: 2 columns (Tablet)
+             * lg: 3 columns (Laptop)
+             */
             ->contentGrid([
-                'md' => null,
                 'sm' => 1,
+                'md' => 2,
+                'lg' => 3,
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('category')
