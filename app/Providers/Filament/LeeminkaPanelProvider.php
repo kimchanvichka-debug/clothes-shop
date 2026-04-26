@@ -27,6 +27,8 @@ class LeeminkaPanelProvider extends PanelProvider
             ->id('leeminka')
             ->path('leeminka')
             ->login()
+            // Ensure all uploads and media use Cloudinary globally
+            ->defaultFileSystemDisk('cloudinary') 
             ->colors([
                 'primary' => '#c2410c', 
             ])
@@ -35,6 +37,7 @@ class LeeminkaPanelProvider extends PanelProvider
             ->brandLogoHeight('3rem')
             ->favicon(asset('logo.png'))
             ->font('Inter')
+            // Filament is responsive by default for laptop and mobile
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
