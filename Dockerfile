@@ -19,7 +19,6 @@ WORKDIR /var/www
 COPY . /var/www
 
 # 5. Install Dependencies
-# --- ADDED --no-scripts TO PREVENT BUILD CRASHES ---
 RUN composer install --no-interaction --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 RUN npm install && npm run build
 
@@ -37,11 +36,13 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 10000
 
-# 7. Start Command
-CMD php artisan storage:link && \
+# 7. Optimized Start Command
+# We clear old config first, then migrate, then build a fresh cache.
+CMD php artisan config:clear && \
+    php artisan storage:link && \
     php artisan migrate --force && \
     php artisan filament:assets && \
-    php artisan optimize:clear && \
     php artisan config:cache && \
     php artisan route:cache && \
+    php artisan view:cache && \
     php artisan serve --host=0.0.0.0 --port=10000
