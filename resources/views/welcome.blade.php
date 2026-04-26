@@ -24,7 +24,7 @@
     </style>
     @livewireStyles
 </head>
-<body class="bg-white text-slate-900">
+<body class="bg-white text-slate-900 antialiased">
 
     @if (session()->has('message'))
         <div x-data="{ show: true }" 
@@ -53,30 +53,12 @@
                 <span class="text-[9px] font-bold uppercase tracking-[0.1em] text-black group-hover:text-orange-700 transition-colors">All</span>
                 <span class="khmer-font text-[8px] text-slate-400 mt-0.5">ទាំងអស់</span>
             </a>
-            <a href="/Crop Top" class="group flex flex-col items-center">
-                <span class="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-600 group-hover:text-black">Crop Top</span>
-                <span class="khmer-font text-[8px] text-slate-400 mt-0.5">អាវខើច</span>
-            </a>
-            <a href="/Boxy Fit Tee" class="group flex flex-col items-center">
-                <span class="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-600 group-hover:text-black">Boxy Tee</span>
-                <span class="khmer-font text-[8px] text-slate-400 mt-0.5">អាវយឺតធំ</span>
-            </a>
-            <a href="/Dress" class="group flex flex-col items-center">
-                <span class="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-600 group-hover:text-black">Dress</span>
-                <span class="khmer-font text-[8px] text-slate-400 mt-0.5">រ៉ូប</span>
-            </a>
-            <a href="/Baggy Pants" class="group flex flex-col items-center">
-                <span class="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-600 group-hover:text-black">Pants</span>
-                <span class="khmer-font text-[8px] text-slate-400 mt-0.5">ខោបាវ</span>
-            </a>
-            <a href="/Bikini" class="group flex flex-col items-center">
-                <span class="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-600 group-hover:text-black">Bikini</span>
-                <span class="khmer-font text-[8px] text-slate-400 mt-0.5">ឈុតហែលទឹក</span>
-            </a>
-            <a href="/Sets" class="group flex flex-col items-center">
-                <span class="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-600 group-hover:text-black">Sets</span>
-                <span class="khmer-font text-[8px] text-slate-400 mt-0.5">ឈុត</span>
-            </a>
+            @foreach(['Crop Top' => 'អាវខើច', 'Boxy Fit Tee' => 'អាវយឺតធំ', 'Dress' => 'រ៉ូប', 'Baggy Pants' => 'ខោបាវ', 'Bikini' => 'ឈុតហែលទឹក', 'Sets' => 'ឈុត'] as $slug => $kh)
+                <a href="/{{ $slug }}" class="group flex flex-col items-center">
+                    <span class="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-600 group-hover:text-black">{{ $slug }}</span>
+                    <span class="khmer-font text-[8px] text-slate-400 mt-0.5">{{ $kh }}</span>
+                </a>
+            @endforeach
         </div>
 
         <div class="flex items-center justify-end gap-4">
@@ -141,7 +123,10 @@
             <div class="group cursor-pointer">
                 <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 relative mb-3">
                     @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        {{-- FIX: Checks if the image is a URL (Cloudinary) or a local path --}}
+                        <img src="{{ str_starts_with($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" 
+                             alt="{{ $product->name }}" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                     @else
                         <div class="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 text-[10px] uppercase font-bold">No Image</div>
                     @endif
