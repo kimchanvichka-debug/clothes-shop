@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'default' => env('FILESYSTEM_DISK', 'local'),
+    'default' => env('FILESYSTEM_DISK', 'cloudinary'),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,6 +34,9 @@ return [
 
         'cloudinary' => [
             'driver' => 'cloudinary',
+            'key' => '852361497528164', // From your Render screenshot
+            'secret' => env('CLOUDINARY_API_SECRET'), // We will set this in Render
+            'cloud_name' => 'ddti2rrqf', // From your Render screenshot
             'upload_preset' => env('CLOUDINARY_UPLOAD_PRESET', 'ml_default'),
         ],
 
