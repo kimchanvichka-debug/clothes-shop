@@ -10,7 +10,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
@@ -51,20 +50,18 @@ class ProductResource extends Resource
                             ->required()
                             ->native(false),
 
-                        FileUpload::make('image')
-                            ->image()
-                            // Explicitly using the Cloudinary disk
-                            ->disk('cloudinary') 
-                            ->directory('products')
-                            ->visibility('public')
-                            ->preserveFilenames()
+                        // ALTERNATIVE: Using a URL input instead of a direct file upload
+                        // This bypasses 401 errors and driver issues
+                        TextInput::make('image')
+                            ->label('Product Image URL')
+                            ->placeholder('Paste your Cloudinary or image link here')
+                            ->url()
                             ->required(),
 
                         Textarea::make('description')
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
-                    // 2 columns on laptop, 1 on mobile (handled by Section automatically)
                     ->columns(2),
             ]);
     }
@@ -75,7 +72,6 @@ class ProductResource extends Resource
             ->columns([
                 ImageColumn::make('image')
                     ->label('Photo')
-                    ->disk('cloudinary')
                     ->square() 
                     ->size(80) 
                     ->grow(false),
