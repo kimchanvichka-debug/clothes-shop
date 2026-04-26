@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,9 +21,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Force HTTPS for all links, assets, and Livewire uploads on Render
+        /**
+         * Force HTTPS on Render production environment.
+         * This prevents "Mixed Content" blocks and 401 errors during uploads.
+         */
         if (app()->environment('production') || env('FORCE_HTTPS', true)) {
             URL::forceScheme('https');
         }
+
+        /**
+         * Standardizes pagination for a responsive mobile/laptop experience.
+         */
+        Paginator::useTailwind();
     }
 }
