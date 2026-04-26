@@ -23,9 +23,10 @@ class AppServiceProvider extends ServiceProvider
     {
         /**
          * Force HTTPS on Render production environment.
-         * This prevents "Mixed Content" blocks and 401 errors during uploads.
+         * This is CRITICAL for Cloudinary images to show up correctly.
+         * It prevents browsers from blocking images as "Mixed Content".
          */
-        if (app()->environment('production') || env('FORCE_HTTPS', true)) {
+        if (config('app.env') === 'production' || env('FORCE_HTTPS', true)) {
             URL::forceScheme('https');
         }
 
