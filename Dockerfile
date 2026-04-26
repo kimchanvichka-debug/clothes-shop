@@ -35,8 +35,9 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 10000
 
-# 7. Start Command (This runs ONLY when the site is live)
-CMD php artisan config:clear && \
+# 7. Start Command (Added sleep 10 to prevent "Network Unreachable" errors)
+CMD sleep 10 && \
+    php artisan config:clear && \
     php artisan storage:link && \
     php artisan migrate --force && \
     php artisan filament:assets && \
